@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 import pandas as pd
 import requests
-from Bank_of_Thailnad.config import URL, START_PERIOD, END_PERIOD, HEADERS, OUTPUT_PATH
-from Bank_of_Thailnad.currency_row import CurrencyRow
+from Bank_of_Thailand_Exchange_Rate.config import URL, START_PERIOD, END_PERIOD, HEADERS, OUTPUT_PATH
+from Bank_of_Thailand_Exchange_Rate.currency_row import CurrencyRow
 from datetime import date
 from requests import Response
 
