@@ -1,22 +1,32 @@
 from dataclasses import dataclass
+from datetime import date
+
 import pandas as pd
 import requests
-from Bank_of_Thailand_Exchange_Rate.config import URL, START_PERIOD, END_PERIOD, HEADERS, OUTPUT_PATH
-from Bank_of_Thailand_Exchange_Rate.currency_row import CurrencyRow
-from datetime import date
 from requests import Response
+
+from Bank_of_Thailand_Exchange_Rate.config import (
+    END_PERIOD,
+    HEADERS,
+    OUTPUT_PATH,
+    START_PERIOD,
+    URL,
+)
+from Bank_of_Thailand_Exchange_Rate.currency_row import CurrencyRow
 
 
 @dataclass
 class Currency:
     """
-    This class purpose is dto acquire money exchange rate from Bank of Thailand.
+    This class purpose is dto acquire money exchange rate
+    from Bank of Thailand.
     """
+
     @staticmethod
     def pipeline() -> None:
         """
             This is a Currency Exchange Pipeline,a main function.
-            Process: get Response from API -> extract data -> Write it in CSV format.
+            Process: Call API -> extract data -> Write file.
         :return: None.
         """
         response = Currency.get_exchange_rate()
@@ -30,15 +40,8 @@ class Currency:
         Returns:response of api in json format
 
         """
-        payload = {
-            'start_period': START_PERIOD,
-            'end_period': END_PERIOD
-        }
-        response = requests.get(
-            url=URL,
-            params=payload,
-            headers=HEADERS
-        )
+        payload = {"start_period": START_PERIOD, "end_period": END_PERIOD}
+        response = requests.get(url=URL, params=payload, headers=HEADERS)
         print("Status Code", response.status_code)
         print("JSON Response ", response.json())
 
@@ -48,7 +51,7 @@ class Currency:
     def get_currency_row(tmp_dict: dict[str, any]) -> CurrencyRow:
         """
             Get Currency Row.
-        :param tmp_dict: Temporary Dictionary that represent a record of currency exchange
+        :param tmp_dict: Temporary Dict represent a record of currency exchange
             tmp_dict['buying_sight']:Thai Baht
             tmp_dict['buying_transfer']:Thai Baht
             tmp_dict['currency_id']: Currency ID
@@ -59,13 +62,13 @@ class Currency:
         :return: CurrencyRow
         """
         return CurrencyRow(
-            buying_sight=tmp_dict['buying_sight'],
-            buying_transfer=tmp_dict['buying_transfer'],
-            currency_id=tmp_dict['currency_id'],
-            currency_name_eng=tmp_dict['currency_name_eng'],
-            mid_rate=tmp_dict['mid_rate'],
-            period=tmp_dict['period'],
-            selling=tmp_dict['selling']
+            buying_sight=tmp_dict["buying_sight"],
+            buying_transfer=tmp_dict["buying_transfer"],
+            currency_id=tmp_dict["currency_id"],
+            currency_name_eng=tmp_dict["currency_name_eng"],
+            mid_rate=tmp_dict["mid_rate"],
+            period=tmp_dict["period"],
+            selling=tmp_dict["selling"],
         )
 
     @staticmethod
@@ -80,7 +83,7 @@ class Currency:
         """
         response_dict = response.json()
         table: list[CurrencyRow] = []
-        for item in response_dict['result']['data']['data_detail']:
+        for item in response_dict["result"]["data"]["data_detail"]:
             table.append(Currency.get_currency_row(item))
         return table
 
@@ -96,9 +99,11 @@ class Currency:
         """
         try:
             df = pd.DataFrame(table)
-            df.to_parquet(f'{OUTPUT_PATH}exchange_rates_{date.today().strftime("%Y%m%d")}.parquet',
-                          index=False,
-                          )
+            datetime_suffix: str = date.today().strftime("%Y%m%d")
+            df.to_parquet(
+                f"{OUTPUT_PATH}exchange_rates_{datetime_suffix}.parquet",
+                index=False,
+            )
         except OSError:
             raise OSError
 
@@ -114,9 +119,12 @@ class Currency:
         """
         try:
             df = pd.DataFrame(table)
-            df.to_csv(f'{OUTPUT_PATH}exchange_rates_{date.today().strftime("%Y%m%d")}.csv',
-                      index=False,
-                      sep=',',
-                      encoding='utf-8')
+            datetime_suffix: str = date.today().strftime("%Y%m%d")
+            df.to_csv(
+                f"{OUTPUT_PATH}exchange_rates_{datetime_suffix}.csv",
+                index=False,
+                sep=",",
+                encoding="utf-8",
+            )
         except OSError:
             raise OSError
