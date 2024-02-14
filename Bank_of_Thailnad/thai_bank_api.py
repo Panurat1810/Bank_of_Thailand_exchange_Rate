@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 import pandas as pd
 import requests
-from poetry_demo.config import URL, START_PERIOD, END_PERIOD, HEADERS, OUTPUT_PATH
-from poetry_demo.currency_row import CurrencyRow
+from Bank_of_Thailnad.config import URL, START_PERIOD, END_PERIOD, HEADERS, OUTPUT_PATH
+from Bank_of_Thailnad.currency_row import CurrencyRow
 from datetime import date
 from Response import Response
 
