@@ -21,7 +21,7 @@ class Currency:
         """
         response = Currency.get_exchange_rate()
         table = Currency.get_currency_table(response=response)
-        Currency.to_csv(table=table)
+        Currency.to_parquet(table=table)
 
     @staticmethod
     def get_exchange_rate() -> Response:
@@ -83,6 +83,24 @@ class Currency:
         for item in response_dict['result']['data']['data_detail']:
             table.append(Currency.get_currency_row(item))
         return table
+
+    @staticmethod
+    def to_parquet(table: list[CurrencyRow]) -> None:
+        """
+        This method is to format a table of extracted data to CSV
+        Args:
+            table:extracted data of exchange rate
+
+        Returns: none
+
+        """
+        try:
+            df = pd.DataFrame(table)
+            df.to_parquet(f'{OUTPUT_PATH}exchange_rates_{date.today().strftime("%Y%m%d")}.parquet',
+                          index=False,
+                          )
+        except OSError:
+            raise OSError
 
     @staticmethod
     def to_csv(table: list[CurrencyRow]) -> None:
