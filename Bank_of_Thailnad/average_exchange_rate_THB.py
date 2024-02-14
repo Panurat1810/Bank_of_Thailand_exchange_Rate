@@ -4,7 +4,7 @@ import requests
 from Bank_of_Thailnad.config import URL, START_PERIOD, END_PERIOD, HEADERS, OUTPUT_PATH
 from Bank_of_Thailnad.currency_row import CurrencyRow
 from datetime import date
-from Response import Response
+from requests import Response
 
 
 @dataclass

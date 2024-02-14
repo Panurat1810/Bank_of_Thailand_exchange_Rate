@@ -1,3 +1,3 @@
-from Bank_of_Thailnad.thai_bank_api import Currency
+from Bank_of_Thailnad.average_exchange_rate_THB import Currency
 
 Currency.pipeline()
