@@ -1,13 +1,5 @@
 from dataclasses import dataclass
-import requests
-from requests import Response
-from Bank_of_Thailand_Exchange_Rate.config import (
-    END_PERIOD,
-    HEADERS,
-    OUTPUT_PATH,
-    START_PERIOD,
-    URL,
-)
+
 
 @dataclass
 class CurrencyRow:
@@ -22,6 +14,3 @@ class CurrencyRow:
     mid_rate: float
     period: str
     selling: float
-
-
-
