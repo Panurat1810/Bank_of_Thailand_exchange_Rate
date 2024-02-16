@@ -43,8 +43,6 @@ class Currency:
         """
         payload = {"start_period": START_PERIOD, "end_period": END_PERIOD}
         response = requests.get(url=URL, params=payload, headers=HEADERS)
-        #        print("Status Code", response.status_code)
-        #        print("JSON Response ",json.dumps(response.json(),indent=4))
         if response.status_code == 200:
             return response
         else:
