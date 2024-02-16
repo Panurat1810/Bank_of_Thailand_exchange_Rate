@@ -30,11 +30,12 @@ class Currency:
         :return: None.
         """
         response = Currency.get_exchange_rate()
-        table = Currency.get_currency_table(response=response)
+        detail_data_dict = Currency.get_currency_data(response=response)
+        table = Currency.get_currency_table(data_detail_dict=detail_data_dict)
         Currency.to_parquet(table=table)
 
     @staticmethod
-    def get_exchange_rate() -> Response:
+    def get_exchange_rate() -> Response | None:
         """
         Get Exchange Rate Function, this function call API
         Returns:response of api in json format
@@ -42,10 +43,10 @@ class Currency:
         """
         payload = {"start_period": START_PERIOD, "end_period": END_PERIOD}
         response = requests.get(url=URL, params=payload, headers=HEADERS)
-        print("Status Code", response.status_code)
-        print("JSON Response ", response.json())
-
-        return response
+        if response.status_code == 200:
+            return response
+        else:
+            return None
 
     @staticmethod
     def get_currency_row(tmp_dict: dict[str, any]) -> CurrencyRow:
@@ -72,19 +73,43 @@ class Currency:
         )
 
     @staticmethod
-    def get_currency_table(response: Response) -> list[CurrencyRow]:
+    def get_currency_data(response: Response) -> list[dict[str, any]]:
         """
-        This function purpose is to extracted data from response
+        This function extracts data from response
         Args:
-            response:response from API in JSON format
+            response:response from API
+
+        Returns: data_detail_dict: extracted Data
+
+        """
+        response_dict = response.json()
+        if "result" in response_dict:
+            result_dict = response_dict["result"]
+            if "data" in result_dict:
+                data_dict = result_dict["data"]
+                if "data_detail" in data_dict:
+                    data_detail_dict = data_dict["data_detail"]
+                    return data_detail_dict
+                else:
+                    raise KeyError("Key 'data_detail' is not found in data_dict")
+            else:
+                raise KeyError("Key 'data' is not found in result_dict")
+        else:
+            raise KeyError("Key 'result' is not found in response_dict")
+
+    @staticmethod
+    def get_currency_table(data_detail_dict: list[dict[str, any]]) -> list[CurrencyRow]:
+        """
+        This function format data to table format
+        Args:
+            data_detail_dict:extracted data from get_currency_data
 
         Returns: table of extracted data
 
         """
-        response_dict = response.json()
         table: list[CurrencyRow] = []
-        for item in response_dict["result"]["data"]["data_detail"]:
-            table.append(Currency.get_currency_row(item))
+        for key in data_detail_dict:
+            table.append(Currency.get_currency_row(key))
         return table
 
     @staticmethod
