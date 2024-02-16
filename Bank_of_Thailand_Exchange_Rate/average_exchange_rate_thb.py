@@ -29,36 +29,26 @@ class Currency:
             Process: Call API -> extract data -> Write file.
         :return: None.
         """
-        response = Currency.get_exchange_rate(number=1)
+        response = Currency.get_exchange_rate()
         detail_data_dict = Currency.get_currency_data(response=response)
         table = Currency.get_currency_table(data_detail_dict=detail_data_dict)
         Currency.to_parquet(table=table)
 
     @staticmethod
-    def get_exchange_rate(number: int) -> Response | None:
+    def get_exchange_rate() -> Response | None:
         """
         Get Exchange Rate Function, this function call API
         Returns:response of api in json format
 
         """
-        if number == 1:
-            payload = {"start_period": START_PERIOD, "end_period": END_PERIOD}
-            response = requests.get(url=URL, params=payload, headers=HEADERS)
-            #        print("Status Code", response.status_code)
-            #        print("JSON Response ",json.dumps(response.json(),indent=4))
-            if response.status_code == 200:
-                return response
-            else:
-                return None
-        if number == 2:
-            payload = {"start_period": START_PERIOD, "end_period": END_PERIOD}
-            response = requests.get(url=URL, params=payload, headers=HEADERS)
-            #        print("Status Code", response.status_code)
-            #        print("JSON Response ",json.dumps(response.json(),indent=4))
-            if response.status_code == 200:
-                return response.json()["result"]["data"]["data_detail"]["currency_id"]
-            else:
-                return None
+        payload = {"start_period": START_PERIOD, "end_period": END_PERIOD}
+        response = requests.get(url=URL, params=payload, headers=HEADERS)
+        #        print("Status Code", response.status_code)
+        #        print("JSON Response ",json.dumps(response.json(),indent=4))
+        if response.status_code == 200:
+            return response
+        else:
+            return None
 
     @staticmethod
     def get_currency_row(tmp_dict: dict[str, any]) -> CurrencyRow:

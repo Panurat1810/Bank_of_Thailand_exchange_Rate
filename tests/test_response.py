@@ -28,7 +28,9 @@ class TestExchangeRate(unittest.TestCase):
             }
         }
         mock_requests.get.return_value = mock_response
-        self.assertEqual(Currency.get_exchange_rate(2), "test")
+        response = Currency.get_exchange_rate()
+        currency_id = response.json()["result"]["data"]["data_detail"]
+        self.assertEqual(currency_id["currency_id"], "test")
 
     @patch("Bank_of_Thailand_Exchange_Rate.average_exchange_rate_thb.requests")
     def test_exchange_rate_fail(self, mock_requests):
@@ -36,4 +38,4 @@ class TestExchangeRate(unittest.TestCase):
         mock_response.status_code = 400
 
         mock_requests.get.return_value = mock_response
-        self.assertIsNone(Currency.get_exchange_rate(2))
+        self.assertIsNone(Currency.get_exchange_rate())

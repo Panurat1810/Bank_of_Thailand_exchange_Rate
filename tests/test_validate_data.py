@@ -19,7 +19,7 @@ def mock_good_data() -> dict[str, any]:
 @pytest.fixture
 def std_currency_names() -> tuple[list[str], list[str]]:
     obj = Currency()
-    response = obj.get_exchange_rate(1)
+    response = obj.get_exchange_rate()
     df = response.json()
     currency_id = []
     currency_name_eng = []
