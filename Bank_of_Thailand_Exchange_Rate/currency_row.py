@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import date
 
 
 @dataclass
@@ -12,5 +13,5 @@ class CurrencyRow:
     currency_id: str
     currency_name_eng: str
     mid_rate: float
-    period: str
+    period: date
     selling: float
