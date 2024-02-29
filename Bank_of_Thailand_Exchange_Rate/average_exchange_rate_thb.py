@@ -24,7 +24,7 @@ class Currency:
     """
 
     @staticmethod
-    def pipeline() -> pd.DataFrame:
+    def pipeline() -> None:
         """
             This is a Currency Exchange Pipeline,a main function.
             Process: Call API -> extract data -> return dataframe.
@@ -33,10 +33,11 @@ class Currency:
         response = Currency.get_exchange_rate()
         data_detail_list = Currency.get_currency_data(response=response)
         table = Currency.get_currency_table(data_detail_list=data_detail_list)
-        df = pd.DataFrame(table)
-        df = df.convert_dtypes()
-        df['period'] = pd.to_datetime(df['period']).dt.date.astype('datetime64[D]')
-        return df
+        Currency.to_parquet(table)
+        # df = pd.DataFrame(table)
+        # df = df.convert_dtypes()
+        # df['period'] = pd.to_datetime(df['period']).dt.date.astype('datetime64[D]')
+        # return df
 
     @staticmethod
     def get_exchange_rate() -> Response or None:
