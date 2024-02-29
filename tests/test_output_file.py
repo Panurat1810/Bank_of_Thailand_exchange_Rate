@@ -1,5 +1,6 @@
 import glob
 import os.path
+from typing import List
 from unittest.mock import patch
 
 import pytest
@@ -8,7 +9,7 @@ from Bank_of_Thailand_Exchange_Rate.average_exchange_rate_thb import Currency
 from Bank_of_Thailand_Exchange_Rate.currency_row import CurrencyRow
 
 
-def test_create_csv_file_success(mock_good_data: list[CurrencyRow]) -> None:
+def test_create_csv_file_success(mock_good_data: List[CurrencyRow]) -> None:
     obj = Currency()
     mock_table = list(mock_good_data)
     obj.to_csv(mock_table)
@@ -19,7 +20,7 @@ def test_create_csv_file_success(mock_good_data: list[CurrencyRow]) -> None:
 
 
 @patch("Bank_of_Thailand_Exchange_Rate.average_exchange_rate_thb.pd.DataFrame.to_csv")
-def test_create_csv_file_failed(mock_to_csv, mock_good_data: list[CurrencyRow]) -> None:
+def test_create_csv_file_failed(mock_to_csv, mock_good_data: List[CurrencyRow]) -> None:
     mock_to_csv.side_effect = OSError("Mocked OSError")
     obj = Currency()
     mock_table = list(mock_good_data)
@@ -29,7 +30,7 @@ def test_create_csv_file_failed(mock_to_csv, mock_good_data: list[CurrencyRow]) 
         assert len(csv_file) == 0
 
 
-def test_create_parquet_file_success(mock_good_data: list[CurrencyRow]) -> None:
+def test_create_parquet_file_success(mock_good_data: List[CurrencyRow]) -> None:
     obj = Currency()
     mock_table = list(mock_good_data)
     obj.to_parquet(mock_table)
@@ -40,7 +41,7 @@ def test_create_parquet_file_success(mock_good_data: list[CurrencyRow]) -> None:
 
 
 @patch("Bank_of_Thailand_Exchange_Rate.average_exchange_rate_thb.pd.DataFrame.to_parquet")
-def test_create_parquet_file_failed(mock_to_parquet, mock_good_data: list[CurrencyRow]) -> None:
+def test_create_parquet_file_failed(mock_to_parquet, mock_good_data: List[CurrencyRow]) -> None:
     mock_to_parquet.side_effect = OSError("Mocked OSError")
     obj = Currency()
     mock_table = list(mock_good_data)

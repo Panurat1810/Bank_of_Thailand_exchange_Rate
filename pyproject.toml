@@ -1,16 +1,20 @@
 [tool.poetry]
 name = "Bank_of_Thailand_Exchange_Rate"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
+packages = [
+    { include = "Bank_of_Thailand_Exchange_Rate"},
+    { include = "tests", format = "sdist"},
+]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.8"
 requests = "^2.31.0"
-pandas = "^2.2.0"
+pandas = "^2.0.0"
 pyarrow = "^15.0.0"
-pytest = "^8.0.0"
+pytest = "^5.0.0"
 
 [build-system]
 requires = ["poetry-core"]

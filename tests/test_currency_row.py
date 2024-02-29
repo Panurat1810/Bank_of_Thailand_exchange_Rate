@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Dict
 
 from Bank_of_Thailand_Exchange_Rate.currency_row import CurrencyRow
 
@@ -7,7 +8,7 @@ def test_validate_type_currency_row_success(mock_good_data_good_currency_row: Cu
     assert isinstance(mock_good_data_good_currency_row, CurrencyRow) is True
 
 
-def test_validate_type_currency_row_failed(mock_invalid_row: dict[str, any]) -> None:
+def test_validate_type_currency_row_failed(mock_invalid_row: Dict[str, any]) -> None:
     assert isinstance(mock_invalid_row, CurrencyRow) is False
 
 
