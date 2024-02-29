@@ -1,11 +1,12 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 from typing import Dict, List
-from datetime import datetime
 
 import pandas as pd
 import requests
 from requests import Response
+
+from Bank_of_Thailand_Exchange_Rate.currency_row import CurrencyRow
 from Bank_of_Thailand_Exchange_Rate.request_config import (
     END_PERIOD,
     HEADERS,
@@ -13,7 +14,6 @@ from Bank_of_Thailand_Exchange_Rate.request_config import (
     START_PERIOD,
     URL,
 )
-from Bank_of_Thailand_Exchange_Rate.currency_row import CurrencyRow
 
 
 @dataclass
@@ -119,14 +119,14 @@ class Currency:
         converted_data_detail_dict = {}
         for key, value in data_detail_dict.items():
             # Replace empty strings with None
-            if value == '':
+            if value == "":
                 converted_data_detail_dict[key] = None
-            elif key == 'period':
+            elif key == "period":
                 try:
-                    converted_data_detail_dict[key] = datetime.strptime(value, '%Y-%m-%d').date()
+                    converted_data_detail_dict[key] = datetime.strptime(value, "%Y-%m-%d").date()
                 except ValueError:
                     converted_data_detail_dict[key] = None
-            elif key in ['buying_sight', 'buying_transfer', 'mid_rate', 'selling']:
+            elif key in ["buying_sight", "buying_transfer", "mid_rate", "selling"]:
                 try:
                     converted_data_detail_dict[key] = float(value)
                 except ValueError:
