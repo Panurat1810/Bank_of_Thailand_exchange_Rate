@@ -2,11 +2,11 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from Bank_of_Thailand_Exchange_Rate.average_exchange_rate_thb import Currency
-
+from typing import NoReturn
 
 class TestExchangeRate(unittest.TestCase):
     @patch("Bank_of_Thailand_Exchange_Rate.average_exchange_rate_thb.requests")
-    def test_exchange_rate_success(self, mock_requests) -> None:
+    def test_exchange_rate_success(self, mock_requests) -> NoReturn:
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.json.return_value = {
@@ -33,7 +33,7 @@ class TestExchangeRate(unittest.TestCase):
         self.assertEqual(currency_id["currency_id"], "test")
 
     @patch("Bank_of_Thailand_Exchange_Rate.average_exchange_rate_thb.requests")
-    def test_exchange_rate_fail(self, mock_requests) -> None:
+    def test_exchange_rate_fail(self, mock_requests) -> NoReturn:
         mock_response = MagicMock()
         mock_response.status_code = 400
 

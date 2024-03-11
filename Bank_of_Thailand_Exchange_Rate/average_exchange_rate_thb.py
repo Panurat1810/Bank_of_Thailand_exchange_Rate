@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Dict, List
+from typing import Dict, List, NoReturn
 
 import pandas as pd
 import requests
@@ -33,7 +33,7 @@ class Currency:
         response = Currency.get_exchange_rate()
         data_detail_list = Currency.get_currency_data(response=response)
         table = Currency.get_currency_table(data_detail_list=data_detail_list)
-        Currency.to_parquet(table)
+        Currency.to_json(table)
 
     @staticmethod
     def get_exchange_rate() -> Response or None:
@@ -147,7 +147,7 @@ class Currency:
         return table
 
     @staticmethod
-    def to_parquet(table: List[CurrencyRow]) -> None:
+    def to_parquet(table: List[CurrencyRow]) -> NoReturn:
         """
         This method is to format a table of extracted data to CSV
         Args:
@@ -167,7 +167,7 @@ class Currency:
             raise OSError
 
     @staticmethod
-    def to_csv(table: List[CurrencyRow]) -> None:
+    def to_csv(table: List[CurrencyRow]) -> NoReturn:
         """
         This method is to format a table of extracted data to CSV
         Args:
@@ -187,3 +187,25 @@ class Currency:
             )
         except OSError:
             raise OSError
+
+    @staticmethod
+    def to_json(table: List[CurrencyRow]) -> None:
+        """
+        This method is to format a table of extracted data to CSV
+        Args:
+            table:extracted data of exchange rate
+
+        Returns: none
+
+        """
+        try:
+            df = pd.DataFrame(table)
+            datetime_suffix: str = date.today().strftime("%Y%m%d")
+            df.to_json(
+                f"{OUTPUT_PATH}exchange_rates_{datetime_suffix}.json"
+            )
+        except OSError:
+            raise OSError
+
+
+
