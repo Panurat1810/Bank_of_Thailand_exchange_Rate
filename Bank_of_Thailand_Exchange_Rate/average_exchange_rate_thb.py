@@ -33,7 +33,7 @@ class Currency:
         response = Currency.get_exchange_rate()
         data_detail_list = Currency.get_currency_data(response=response)
         table = Currency.get_currency_table(data_detail_list=data_detail_list)
-        Currency.to_json(table)
+        Currency.to_parquet(table)
 
     @staticmethod
     def get_exchange_rate() -> Response or None:
