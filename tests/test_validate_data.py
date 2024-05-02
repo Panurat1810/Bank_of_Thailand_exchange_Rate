@@ -1,10 +1,12 @@
+from typing import Dict, List, Tuple, NoReturn
+
 import pytest
 
 from Bank_of_Thailand_Exchange_Rate.average_exchange_rate_thb import Currency
 
 
 @pytest.fixture
-def std_currency_names() -> tuple[list[str], list[str]]:
+def std_currency_names() -> Tuple[List[str], List[str]]:
     obj = Currency()
     response = obj.get_exchange_rate()
     df = response.json()
@@ -17,14 +19,16 @@ def std_currency_names() -> tuple[list[str], list[str]]:
 
 
 def test_validate_data_currency_success(
-        mock_good_data: dict[str, any], std_currency_names: tuple[list[str], list[str]]) -> None:
+    mock_good_data: Dict[str, any], std_currency_names: Tuple[List[str], List[str]]
+) -> NoReturn:
     currency_name, currency_id = std_currency_names
     assert mock_good_data["currency_id"] in currency_id
     assert mock_good_data["currency_name_eng"] in currency_name
 
 
 def test_validate_data_currency_failed(
-        mock_bad_data: dict[str, any], std_currency_names: tuple[list[str], list[str]]) -> None:
+    mock_bad_data: Dict[str, any], std_currency_names: Tuple[List[str], List[str]]
+) -> NoReturn:
     currency_name, currency_id = std_currency_names
     assert mock_bad_data["currency_id"] not in currency_id
     assert mock_bad_data["currency_name_eng"] not in currency_name

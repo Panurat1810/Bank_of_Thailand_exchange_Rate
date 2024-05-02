@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Dict, List
 
 import pytest
 
@@ -6,7 +7,7 @@ from Bank_of_Thailand_Exchange_Rate.currency_row import CurrencyRow
 
 
 @pytest.fixture()
-def mock_good_data() -> dict[str, any]:
+def mock_good_data() -> Dict[str, any]:
     return {
         "buying_sight": 1.0,
         "buying_transfer": 1.0,
@@ -19,7 +20,7 @@ def mock_good_data() -> dict[str, any]:
 
 
 @pytest.fixture()
-def mock_list_good_data() -> list[dict[str, any]]:
+def mock_list_good_data() -> List[Dict[str, any]]:
     return [
         {
             "buying_sight": 1.0,
@@ -34,7 +35,7 @@ def mock_list_good_data() -> list[dict[str, any]]:
 
 
 @pytest.fixture()
-def mock_bad_data() -> dict[str, any]:
+def mock_bad_data() -> Dict[str, any]:
     return {
         "buying_sight": 1,
         "buying_transfer": 1,
@@ -47,7 +48,7 @@ def mock_bad_data() -> dict[str, any]:
 
 
 @pytest.fixture()
-def mock_invalid_data() -> dict[str, any]:
+def mock_invalid_data() -> Dict[str, any]:
     return {
         "buy_sight": 1,
         "buy_transfer": 1,
@@ -60,7 +61,7 @@ def mock_invalid_data() -> dict[str, any]:
 
 
 @pytest.fixture()
-def mock_good_data_good_currency_row(mock_good_data: dict[str, any]) -> CurrencyRow:
+def mock_good_data_good_currency_row(mock_good_data: Dict[str, any]) -> CurrencyRow:
     mock_currency_row: CurrencyRow = CurrencyRow(
         buying_sight=mock_good_data["buying_sight"],
         buying_transfer=mock_good_data["buying_transfer"],
@@ -74,7 +75,7 @@ def mock_good_data_good_currency_row(mock_good_data: dict[str, any]) -> Currency
 
 
 @pytest.fixture()
-def mock_invalid_row(mock_invalid_data: dict[str, any]) -> dict[str, any]:
+def mock_invalid_row(mock_invalid_data: Dict[str, any]) -> Dict[str, any]:
     mock_currency_row = {
         "buy_sight": mock_invalid_data["buy_sight"],
         "buy_transfer": mock_invalid_data["buy_transfer"],
@@ -88,7 +89,7 @@ def mock_invalid_row(mock_invalid_data: dict[str, any]) -> dict[str, any]:
 
 
 @pytest.fixture()
-def mock_bad_data_good_currency_row(mock_bad_data: dict[str, any]) -> CurrencyRow:
+def mock_bad_data_good_currency_row(mock_bad_data: Dict[str, any]) -> CurrencyRow:
     mock_currency_row: CurrencyRow = CurrencyRow(
         buying_sight=mock_bad_data["buying_sight"],
         buying_transfer=mock_bad_data["buying_transfer"],

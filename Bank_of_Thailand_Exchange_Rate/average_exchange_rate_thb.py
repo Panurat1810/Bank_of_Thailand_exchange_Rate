@@ -1,18 +1,19 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
+from typing import Dict, List, NoReturn
 
 import pandas as pd
 import requests
 from requests import Response
 
-from Bank_of_Thailand_Exchange_Rate.config import (
+from Bank_of_Thailand_Exchange_Rate.currency_row import CurrencyRow
+from Bank_of_Thailand_Exchange_Rate.request_config import (
     END_PERIOD,
     HEADERS,
     OUTPUT_PATH,
     START_PERIOD,
     URL,
 )
-from Bank_of_Thailand_Exchange_Rate.currency_row import CurrencyRow
 
 
 @dataclass
@@ -26,16 +27,16 @@ class Currency:
     def pipeline() -> None:
         """
             This is a Currency Exchange Pipeline,a main function.
-            Process: Call API -> extract data -> Write file.
+            Process: Call API -> extract data -> write file.
         :return: None.
         """
         response = Currency.get_exchange_rate()
-        detail_data_dict = Currency.get_currency_data(response=response)
-        table = Currency.get_currency_table(data_detail_dict=detail_data_dict)
-        Currency.to_parquet(table=table)
+        data_detail_list = Currency.get_currency_data(response=response)
+        table = Currency.get_currency_table(data_detail_list=data_detail_list)
+        Currency.to_parquet(table)
 
     @staticmethod
-    def get_exchange_rate() -> Response | None:
+    def get_exchange_rate() -> Response or None:
         """
         Get Exchange Rate Function, this function call API
         Returns:response of api in json format
@@ -49,7 +50,7 @@ class Currency:
             return None
 
     @staticmethod
-    def get_currency_row(tmp_dict: dict[str, any]) -> CurrencyRow:
+    def get_currency_row(tmp_dict: Dict[str, any]) -> CurrencyRow:
         """
             Get Currency Row.
         :param tmp_dict: Temporary Dict represent a record of currency exchange
@@ -73,7 +74,7 @@ class Currency:
         )
 
     @staticmethod
-    def get_currency_data(response: Response) -> list[dict[str, any]]:
+    def get_currency_data(response: Response) -> List[Dict[str, any]]:
         """
         This function extracts data from response
         Args:
@@ -88,8 +89,12 @@ class Currency:
             if "data" in result_dict:
                 data_dict = result_dict["data"]
                 if "data_detail" in data_dict:
-                    data_detail_dict = data_dict["data_detail"]
-                    return data_detail_dict
+                    data_detail_list = data_dict["data_detail"]
+                    data_detail_list_cleaned = []
+                    for data_detail_dict in data_detail_list:
+                        convert_data_dict = Currency.convert_data_types(data_detail_dict)
+                        data_detail_list_cleaned.append(convert_data_dict)
+                    return data_detail_list_cleaned
                 else:
                     raise KeyError("Key 'data_detail' is not found in data_dict")
             else:
@@ -98,22 +103,51 @@ class Currency:
             raise KeyError("Key 'result' is not found in response_dict")
 
     @staticmethod
-    def get_currency_table(data_detail_dict: list[dict[str, any]]) -> list[CurrencyRow]:
+    def convert_data_types(data_detail_dict: Dict[str, any]) -> Dict[str, any]:
+        """
+        Convert datatype of each element in dict
+        Args:
+            data_detail_dict: Dict[str, any]
+
+        Returns: Dict[str, any]
+
+        """
+        converted_data_detail_dict = {}
+        for key, value in data_detail_dict.items():
+            # Replace empty strings with None
+            if value == "":
+                converted_data_detail_dict[key] = None
+            elif key == "period":
+                try:
+                    converted_data_detail_dict[key] = datetime.strptime(value, "%Y-%m-%d").date()
+                except ValueError:
+                    converted_data_detail_dict[key] = None
+            elif key in ["buying_sight", "buying_transfer", "mid_rate", "selling"]:
+                try:
+                    converted_data_detail_dict[key] = float(value)
+                except ValueError:
+                    converted_data_detail_dict[key] = None
+            else:
+                converted_data_detail_dict[key] = value
+        return converted_data_detail_dict
+
+    @staticmethod
+    def get_currency_table(data_detail_list: List[Dict[str, any]]) -> List[CurrencyRow]:
         """
         This function format data to table format
         Args:
-            data_detail_dict:extracted data from get_currency_data
+            data_detail_list: extracted data from get_currency_data
 
         Returns: table of extracted data
 
         """
-        table: list[CurrencyRow] = []
-        for key in data_detail_dict:
-            table.append(Currency.get_currency_row(key))
+        table: List[CurrencyRow] = []
+        for data_detail_dict in data_detail_list:
+            table.append(Currency.get_currency_row(data_detail_dict))
         return table
 
     @staticmethod
-    def to_parquet(table: list[CurrencyRow]) -> None:
+    def to_parquet(table: List[CurrencyRow]) -> NoReturn:
         """
         This method is to format a table of extracted data to CSV
         Args:
@@ -133,7 +167,7 @@ class Currency:
             raise OSError
 
     @staticmethod
-    def to_csv(table: list[CurrencyRow]) -> None:
+    def to_csv(table: List[CurrencyRow]) -> NoReturn:
         """
         This method is to format a table of extracted data to CSV
         Args:
@@ -153,3 +187,25 @@ class Currency:
             )
         except OSError:
             raise OSError
+
+    @staticmethod
+    def to_json(table: List[CurrencyRow]) -> None:
+        """
+        This method is to format a table of extracted data to CSV
+        Args:
+            table:extracted data of exchange rate
+
+        Returns: none
+
+        """
+        try:
+            df = pd.DataFrame(table)
+            datetime_suffix: str = date.today().strftime("%Y%m%d")
+            df.to_json(
+                f"{OUTPUT_PATH}exchange_rates_{datetime_suffix}.json"
+            )
+        except OSError:
+            raise OSError
+
+
+
